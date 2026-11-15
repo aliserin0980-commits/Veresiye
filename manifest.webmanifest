@@ -1,6 +1,6 @@
 {
-  "name": "Veresiye Defteri",
-  "short_name": "Veresiye",
+  "name": "Esnafy — Veresiye Defteri",
+  "short_name": "Esnafy",
   "description": "Kimin ne kadar borcu var, tek bakışta gör. WhatsApp ile nazikçe hatırlat.",
   "lang": "tr",
   "start_url": "./",

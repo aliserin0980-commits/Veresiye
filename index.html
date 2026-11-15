@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<!-- Veresiye Defteri — © 2026 Tüm hakları saklıdır. İzinsiz kopyalanamaz, çoğaltılamaz, dağıtılamaz. -->
+<!-- Esnafy — © 2026 Tüm hakları saklıdır. İzinsiz kopyalanamaz, çoğaltılamaz, dağıtılamaz. -->
 <html lang="tr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Veresiye</title>
-<meta name="description" content="Veresiye defterin cebinde: kimin ne kadar borcu var tek bakışta gör, WhatsApp ile nazikçe hatırlat.">
+<title>Esnafy</title>
+<meta name="description" content="Esnafy — veresiye defterin cebinde: kimin ne kadar borcu var tek bakışta gör, WhatsApp ile nazikçe hatırlat.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Veresiye">
+<meta name="apple-mobile-web-app-title" content="Esnafy">
 <meta name="theme-color" content="#f4f6fb">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -207,7 +207,7 @@
   <section id="home">
     <header>
       <img src="icon-180.png" alt="">
-      <h1>Veresiye</h1>
+      <h1>Esnafy</h1>
       <button class="icon-btn" onclick="openSettings()" aria-label="Ayarlar"><svg class="i"><use href="#i-gear"/></svg></button>
     </header>
     <div class="install hidden" id="installTip">
@@ -296,7 +296,7 @@
     <input type="file" id="importFile" accept=".json,application/json" class="hidden" onchange="importBackup(this)">
     <p class="hint">Bilgilerin yalnızca bu telefonda saklanır, kimseyle paylaşılmaz. Ayda bir <b>Yedek al</b>; telefon değişirse geri yükle.</p>
     <button class="btn light" style="margin-top:14px" onclick="closeSheets()">Kapat</button>
-    <p class="legal">Veresiye Defteri · Sürüm <span id="ver"></span><br>© 2026 Tüm hakları saklıdır.</p>
+    <p class="legal">Esnafy · Sürüm <span id="ver"></span><br>© 2026 Tüm hakları saklıdır.</p>
   </div>
 </div>
 
@@ -306,8 +306,8 @@
   <div class="slides">
     <div class="slide">
       <div class="art"><img src="icon-512.png" alt=""></div>
-      <h2>Veresiye defterin artık cebinde</h2>
-      <p>Kimin ne kadar borcu var, <b>tek bakışta</b> gör. Kâğıt deftere, kaybolan sayfalara son.</p>
+      <h2>Esnafy'ye hoş geldin</h2>
+      <p>Veresiye defterin artık cebinde. Kimin ne kadar borcu var <b>tek bakışta</b> gör; borcu istemek de artık senin derdin değil.</p>
     </div>
     <div class="slide">
       <div class="art" style="background:#eaf1ff;color:#2563eb"><svg class="i"><use href="#i-users"/></svg></div>
@@ -337,7 +337,7 @@
 <div class="toast" id="toast"><span id="toastMsg"></span><button id="toastBtn">Geri al</button></div>
 
 <script>
-const VERSION = "1.1";
+const VERSION = "1.2";
 // ---- Veri: tek anahtar, tutarlar kuruş cinsinden tam sayı ----
 const KEY = "veresiye-v1", INTRO_KEY = "veresiye-tanitim-v1", INSTALL_KEY = "veresiye-kurulum-ipucu";
 let db = { shop: "", customers: [] };
@@ -516,7 +516,9 @@ function waMessage(c) {
   const recent = [...c.entries].sort((a, b) => b.date.localeCompare(a.date) || b.created - a.created).slice(0, 5)
     .map(e => `• ${niceDate(e.date)}: ${e.type === "borc" ? (e.note || "Veresiye") : (e.note ? e.note + " (ödeme)" : "Ödeme")} ${e.type === "borc" ? "" : "−"}${fmt(e.amount)}`);
   const shop = db.shop ? ` ${db.shop} olarak` : "";
-  return `Merhaba ${c.name.split(" ")[0]},${shop} hatırlatmak isteriz: hesabınızda *${fmt(b)}* bakiye bulunuyor.\n\nSon hareketler:\n${recent.join("\n")}\n\nMüsait olduğunuzda ödeyebilirsiniz. Teşekkürler 🙏`;
+  return `Merhaba ${c.name.split(" ")[0]},${shop} hatırlatmak isteriz: hesabınızda *${fmt(b)}* bakiye bulunuyor.\n\nSon hareketler:\n${recent.join("\n")}\n\nMüsait olduğunuzda ödeyebilirsiniz. Teşekkürler 🙏
+
+_Bu hatırlatma Esnafy veresiye defteri tarafından hazırlanmıştır._`;
 }
 function sendWhatsApp() { const c = cust(); location.href = `https://wa.me/${waNumber(c.phone)}?text=${encodeURIComponent(waMessage(c))}`; }
 function callCust() { location.href = "tel:" + cust().phone.replace(/[^\d+]/g, ""); }
@@ -526,10 +528,10 @@ function openSettings() { $("sShop").value = db.shop || ""; $("ver").textContent
 function saveShop() { db.shop = $("sShop").value.trim(); save(); }
 async function exportBackup() {
   saveShop();
-  const name = `veresiye-yedek-${today()}.json`;
+  const name = `esnafy-yedek-${today()}.json`;
   const file = new File([JSON.stringify(db, null, 1)], name, { type: "application/json" });
   if (navigator.canShare && navigator.canShare({ files: [file] })) {
-    try { await navigator.share({ files: [file], title: "Veresiye yedeği" }); return; } catch (e) { if (e.name === "AbortError") return; }
+    try { await navigator.share({ files: [file], title: "Esnafy yedeği" }); return; } catch (e) { if (e.name === "AbortError") return; }
   }
   const a = document.createElement("a"); a.href = URL.createObjectURL(file); a.download = name; a.click();
 }
@@ -547,7 +549,7 @@ function importBackup(input) {
       }
       if (!db.shop && d.shop) db.shop = d.shop;
       save(); closeSheets(); goHome(); toast("Yedek geri yüklendi ✓");
-    } catch (e) { alert("Bu dosya bir Veresiye yedeği değil."); }
+    } catch (e) { alert("Bu dosya bir Esnafy yedeği değil."); }
     input.value = "";
   };
   r.readAsText(f);
