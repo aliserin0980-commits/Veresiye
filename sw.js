@@ -1,5 +1,5 @@
 // İnternetsiz açılış için uygulama dosyalarını önbelleğe alır. Sürüm değişince eski önbellek silinir.
-const CACHE = "veresiye-v3";
+const CACHE = "veresiye-v4";
 const FILES = ["./", "index.html", "manifest.webmanifest", "icon-180.png", "icon-192.png", "icon-512.png", "icon-1024.png"];
 
 self.addEventListener("install", e => {
@@ -19,4 +19,9 @@ self.addEventListener("fetch", e => {
       return r;
     }).catch(() => caches.match(e.request).then(r => r || caches.match("index.html")))
   );
+});
+// Bildirime dokununca uygulamayı aç
+self.addEventListener("notificationclick", e => {
+  e.notification.close();
+  e.waitUntil(self.clients.matchAll({ type: "window" }).then(ws => ws.length ? ws[0].focus() : self.clients.openWindow("./")));
 });

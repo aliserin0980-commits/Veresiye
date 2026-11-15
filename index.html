@@ -31,6 +31,33 @@
   svg.i { width:22px; height:22px; flex:none; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
   .wrap { max-width:560px; margin:0 auto; padding:10px 16px; }
   .hidden { display:none !important; }
+  .due-box { margin-bottom:14px; }
+  .due-head { display:flex; align-items:center; gap:8px; font-weight:700; font-size:15px; margin:0 6px 8px; color:var(--amber); }
+  .due-head svg { width:18px; height:18px; }
+  .due { background:var(--card); border-radius:18px; padding:14px 14px 12px; box-shadow:var(--shadow); margin-bottom:10px; border-left:5px solid var(--amber); }
+  .due.late { border-left-color:var(--red); }
+  .due .top { display:flex; align-items:center; gap:10px; cursor:pointer; }
+  .due .when { font-size:13.5px; font-weight:650; color:var(--amber); }
+  .due.late .when { color:var(--red); }
+  .due .acts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px; }
+  .mini { border:0; border-radius:12px; padding:11px 8px; font-weight:650; font-size:15px; display:flex; align-items:center; justify-content:center; gap:6px; background:var(--soft); color:var(--text); }
+  .mini svg { width:18px; height:18px; }
+  .mini.wa { color:#128c4b; }
+  .mini:disabled { opacity:.4; }
+  .sub.promise { color:var(--blue); font-weight:600; }
+  .sub.promise.late { color:var(--red); }
+  .promise-line { display:inline-flex; align-items:center; gap:6px; margin-top:12px; padding:8px 12px; border-radius:12px; background:var(--soft); font-size:14.5px; font-weight:600; color:var(--blue); }
+  .promise-line.late { color:var(--red); }
+  .promise-line svg { width:16px; height:16px; }
+  .promise-line button { border:0; background:none; color:var(--muted); padding:0 0 0 6px; display:flex; }
+  .three { display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:10px; margin-bottom:10px; }
+  .soon { font-size:12px; font-weight:700; color:#fff; background:var(--amber); border-radius:999px; padding:3px 9px; }
+  .state { font-size:14px; color:var(--muted); }
+  .info p { color:var(--muted); font-size:16px; margin:0 4px 12px; }
+  .info p b { color:var(--text); }
+  .info .steps { background:var(--card); border-radius:16px; padding:6px 16px; box-shadow:var(--shadow); margin-bottom:14px; }
+  .info .steps div { padding:10px 0; border-bottom:1px solid var(--line); font-size:15.5px; }
+  .info .steps div:last-child { border-bottom:0; }
 
   /* üst çubuk */
   header { display:flex; align-items:center; gap:12px; margin:8px 0 16px; }
@@ -199,6 +226,10 @@
   <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></symbol>
   <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></symbol>
   <symbol id="i-share" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="17" rx="3"/><path d="M16 2.5v4M8 2.5v4M3 10h18"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></symbol>
+  <symbol id="i-sms" viewBox="0 0 24 24"><path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-5 4v-4H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/><path d="M8 11h.01M12 11h.01M16 11h.01"/></symbol>
+  <symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></symbol>
   <symbol id="i-store" viewBox="0 0 24 24"><path d="M3 9l1.5-5h15L21 9M3 9v11h18V9M3 9h18M9 20v-6h6v6"/></symbol>
 </svg>
 
@@ -220,6 +251,7 @@
       <div class="big" id="totalAmt">0 ₺</div>
       <div class="stats" id="stats"></div>
     </div>
+    <div class="due-box" id="dueBox"></div>
     <div class="search" id="searchBox">
       <svg class="i"><use href="#i-search"/></svg>
       <input id="search" type="search" placeholder="Müşteri ara" oninput="renderHome()">
@@ -237,13 +269,15 @@
       <h2 id="cName"></h2>
       <div class="phone" id="cPhone"></div>
       <div class="pill" id="cPill"><div class="v" id="cBal"></div><div class="l" id="cBalLbl"></div></div>
+      <div id="cDue"></div>
     </div>
     <div class="two">
       <button class="btn red" onclick="openEntry('borc')"><svg class="i"><use href="#i-plus"/></svg>Borç yaz</button>
       <button class="btn green" onclick="openEntry('odeme')"><svg class="i"><use href="#i-check"/></svg>Ödeme al</button>
     </div>
-    <div class="two">
+    <div class="three">
       <button class="btn wa" id="waBtn" onclick="sendWhatsApp()"><svg class="i"><use href="#i-chat"/></svg>Hatırlat</button>
+      <button class="btn light" id="smsBtn" onclick="sendSms()"><svg class="i"><use href="#i-sms"/></svg>SMS</button>
       <button class="btn light" id="callBtn" onclick="callCust()"><svg class="i"><use href="#i-phone"/></svg>Ara</button>
     </div>
     <h3>Hesap hareketleri</h3>
@@ -276,7 +310,12 @@
     <div class="field"><input id="eAmt" class="money" inputmode="decimal" placeholder="0 ₺"></div>
     <div class="quick" id="payAll"></div>
     <div class="field"><label>Not (isteğe bağlı)</label><input id="eNote" placeholder="Örn: ekmek, süt"></div>
-    <div class="field"><label>Tarih</label><input id="eDate" type="date"></div>
+    <div class="field" id="dueField"><label>Ne zaman ödeyeceğini söyledi? (isteğe bağlı)</label>
+      <div class="quick" style="justify-content:flex-start;gap:8px;margin:0 0 8px">
+        <button class="chip" onclick="setDue(7)">1 hafta sonra</button><button class="chip" onclick="setDue(15)">15 gün</button><button class="chip" onclick="setDue('ay')">Ay başı</button>
+      </div>
+      <input id="eDue" type="date"></div>
+    <div class="field"><label>İşlem tarihi</label><input id="eDate" type="date"></div>
     <button class="btn" id="entrySave" onclick="saveEntry()">Kaydet</button>
     <button class="btn light" style="margin-top:10px" onclick="closeSheets()">Vazgeç</button>
   </div>
@@ -291,12 +330,28 @@
     <div class="list">
       <button class="set-row" onclick="exportBackup()"><span class="ic" style="background:#2563eb"><svg class="i"><use href="#i-save"/></svg></span><span class="mid">Yedek al</span><svg class="i chev"><use href="#i-chev"/></svg></button>
       <button class="set-row" onclick="$('importFile').click()"><span class="ic" style="background:#059669"><svg class="i"><use href="#i-upload"/></svg></span><span class="mid">Yedeği geri yükle</span><svg class="i chev"><use href="#i-chev"/></svg></button>
+      <button class="set-row" onclick="askNotify()"><span class="ic" style="background:#7c3aed"><svg class="i"><use href="#i-bell"/></svg></span><span class="mid">Ödeme günü bildirimleri</span><span class="state" id="notifState"></span></button>
+      <button class="set-row" onclick="openSheet('autoSheet')"><span class="ic" style="background:#128c4b"><svg class="i"><use href="#i-zap"/></svg></span><span class="mid">Otomatik WhatsApp mesajı</span><span class="soon">Yakında</span></button>
       <button class="set-row" onclick="closeSheets(); showIntro()"><span class="ic" style="background:#d97706"><svg class="i"><use href="#i-info"/></svg></span><span class="mid">Tanıtımı tekrar göster</span><svg class="i chev"><use href="#i-chev"/></svg></button>
     </div>
     <input type="file" id="importFile" accept=".json,application/json" class="hidden" onchange="importBackup(this)">
     <p class="hint">Bilgilerin yalnızca bu telefonda saklanır, kimseyle paylaşılmaz. Ayda bir <b>Yedek al</b>; telefon değişirse geri yükle.</p>
     <button class="btn light" style="margin-top:14px" onclick="closeSheets()">Kapat</button>
     <p class="legal">Esnafy · Sürüm <span id="ver"></span><br>© 2026 Tüm hakları saklıdır.</p>
+  </div>
+</div>
+
+<!-- Pencere: otomatik WhatsApp bilgisi -->
+<div class="sheet-bg" id="autoSheet" onclick="if(event.target===this)closeSheets()">
+  <div class="sheet info"><div class="grab"></div>
+    <h2>Otomatik WhatsApp mesajı</h2>
+    <p>Ödeme günü gelince mesajın <b>sen hiçbir şeye dokunmadan</b> gitmesi için <b>WhatsApp Business Platformu</b> (Meta'nın resmi, onaylı işletme sistemi) gerekir.</p>
+    <p>Normal WhatsApp ve ücretsiz <b>WhatsApp Business</b> uygulaması, belirli bir günde kendiliğinden mesaj göndermeye izin vermez.</p>
+    <div class="steps">
+      <div>✅ <b>Şimdi:</b> Ödeme günü gelince Esnafy seni uyarır, mesaj hazırdır; tek dokunuşla gönderirsin.</div>
+      <div>⚡ <b>Yakında (Esnafy Pro):</b> Mesaj, ödeme günü sabah kendiliğinden gider. Bunun için işletmenin onaylı WhatsApp Business hesabı gerekir; mesaj başına küçük bir ücret alınır.</div>
+    </div>
+    <button class="btn light" onclick="closeSheets()">Anladım</button>
   </div>
 </div>
 
@@ -317,12 +372,12 @@
     <div class="slide">
       <div class="art" style="background:#fff1f3;color:#e11d48"><svg class="i"><use href="#i-book"/></svg></div>
       <h2>2. Borç yaz, ödeme al</h2>
-      <p>Müşterinin adına dokun.<br><b style="color:#e11d48">Kırmızı</b> düğme borç yazar, <b style="color:#059669">yeşil</b> düğme ödeme alır. Kalan borç kendiliğinden hesaplanır.</p>
+      <p>Müşterinin adına dokun. <b style="color:#e11d48">Kırmızı</b> düğme borç yazar, <b style="color:#059669">yeşil</b> düğme ödeme alır. <b>Ödeyeceği günü</b> de seçersen o gün Esnafy seni uyarır.</p>
     </div>
     <div class="slide">
       <div class="art" style="background:#e9fbf0;color:#128c4b"><svg class="i"><use href="#i-chat"/></svg></div>
       <h2>3. Nazikçe hatırlat</h2>
-      <p>Yeşil yazılı <b>Hatırlat</b>'a dokun; borç ve son alışverişler hazır bir mesajla gider. 30 günü geçen borçlar <b style="color:#d97706">turuncu saatle</b> işaretlenir.</p>
+      <p>Ödeme günü gelen müşteriler en üstte çıkar. <b>Hatırlat</b>'a dokun; borç ve son alışverişler hazır bir mesajla WhatsApp'tan ya da SMS'le gider.</p>
     </div>
     <div class="slide">
       <div class="art" style="background:#ecfdf5;color:#059669"><svg class="i"><use href="#i-shield"/></svg></div>
@@ -337,7 +392,7 @@
 <div class="toast" id="toast"><span id="toastMsg"></span><button id="toastBtn">Geri al</button></div>
 
 <script>
-const VERSION = "1.2";
+const VERSION = "1.3";
 // ---- Veri: tek anahtar, tutarlar kuruş cinsinden tam sayı ----
 const KEY = "veresiye-v1", INTRO_KEY = "veresiye-tanitim-v1", INSTALL_KEY = "veresiye-kurulum-ipucu";
 let db = { shop: "", customers: [] };
@@ -395,6 +450,7 @@ function renderHome() {
     ? `<span class="stat">${owing} borçlu</span><span class="stat">${db.customers.length} müşteri</span>${late ? `<span class="stat">⏰ ${late} gecikmiş</span>` : ""}`
     : `<span class="stat">Henüz kayıt yok</span>`;
   $("searchBox").classList.toggle("hidden", db.customers.length < 6);
+  renderDue(all);
   if (!db.customers.length) {
     $("custList").innerHTML = `<div class="empty"><div class="art">${ic("users")}</div><b>İlk müşterini ekle</b>Alttaki mavi <b style="display:inline;font-size:inherit">Yeni müşteri</b> düğmesine dokun.</div>`;
     return;
@@ -403,14 +459,37 @@ function renderHome() {
   $("custList").innerHTML = list.map(({ c, b, d }) => {
     const n = daysAgo(d);
     const old = b > 0 && n !== null && n >= 30;
-    const sub = n === null ? "Kayıt yok" : "Son işlem " + dayText(n);
+    let sub = n === null ? "Kayıt yok" : "Son işlem " + dayText(n), subCls = old ? "old" : "", subIc = old ? ic("clock") : "";
+    if (b > 0 && c.due) { const late = c.due < today(); sub = late ? "Söz verdiği gün geçti: " + niceDate(c.due) : c.due === today() ? "Bugün ödeme günü" : "Ödeme sözü: " + niceDate(c.due); subCls = "promise" + (late ? " late" : ""); subIc = ic("cal"); }
     const cls = b > 0 ? "debt" : b < 0 ? "credit" : "zero";
     const txt = b > 0 ? fmt(b) : b < 0 ? "+" + fmt(b) : "Borcu yok";
     return `<div class="row" onclick="openCust('${c.id}')">
       <div class="avatar" ${avatar(c)}>${esc(initials(c.name))}</div>
-      <div class="mid"><div class="name">${esc(c.name)}</div><div class="sub ${old ? "old" : ""}">${old ? ic("clock") : ""}${sub}</div></div>
+      <div class="mid"><div class="name">${esc(c.name)}</div><div class="sub ${subCls}">${subIc}${sub}</div></div>
       <div class="amt ${cls}">${txt}</div>${ic("chev", "chev")}</div>`;
   }).join("");
+}
+
+// ---- Ödeme günü gelenler (en üstte) ----
+function dueList(all) {
+  return (all || db.customers.map(c => ({ c, b: balance(c) }))).filter(x => x.b > 0 && x.c.due && x.c.due <= today())
+    .sort((a, b) => a.c.due.localeCompare(b.c.due));
+}
+function renderDue(all) {
+  const ds = dueList(all);
+  updateBadge(ds.length);
+  $("dueBox").innerHTML = ds.length ? `<div class="due-head">${ic("bell")}Ödeme günü gelenler (${ds.length})</div>` + ds.map(({ c, b }) => {
+    const late = c.due < today();
+    return `<div class="due ${late ? "late" : ""}">
+      <div class="top" onclick="openCust('${c.id}')"><div class="avatar" ${avatar(c)}>${esc(initials(c.name))}</div>
+        <div class="mid"><div class="name">${esc(c.name)}</div><div class="when">${late ? "Söz verdiği gün geçti · " + niceDate(c.due) : "Bugün ödeyeceğini söyledi"}</div></div>
+        <div class="amt debt">${fmt(b)}</div></div>
+      <div class="acts"><button class="mini wa" onclick="current='${c.id}';sendWhatsApp()" ${c.phone ? "" : "disabled"}>${ic("chat")}WhatsApp</button>
+        <button class="mini" onclick="current='${c.id}';sendSms()" ${c.phone ? "" : "disabled"}>${ic("sms")}SMS</button></div></div>`;
+  }).join("") : "";
+}
+function updateBadge(n) {
+  try { if (navigator.setAppBadge) n ? navigator.setAppBadge(n) : navigator.clearAppBadge(); } catch (e) {}
 }
 
 // ---- Müşteri ekranı ----
@@ -434,13 +513,20 @@ function renderCust() {
   $("cPill").className = "pill " + (b > 0 ? "debt" : b < 0 ? "credit" : "zero");
   $("waBtn").disabled = !c.phone || b <= 0;
   $("callBtn").disabled = !c.phone;
+  $("smsBtn").disabled = !c.phone || b <= 0;
+  if (b > 0 && c.due) {
+    const late = c.due < today(), isToday = c.due === today();
+    $("cDue").innerHTML = `<div class="promise-line ${late ? "late" : ""}">${ic("cal")}${late ? "Söz verdiği gün geçti: " + niceDate(c.due) : isToday ? "Bugün ödeyecek" : "Ödeme sözü: " + niceDate(c.due)}
+      <button onclick="addToCalendar()" aria-label="Takvime ekle" title="Takvime ekle">${ic("bell")}</button>
+      <button onclick="clearDue()" aria-label="Sözü sil">${ic("x")}</button></div>`;
+  } else $("cDue").innerHTML = "";
   const es = [...c.entries].sort((a, b) => b.date.localeCompare(a.date) || b.created - a.created);
   $("entries").innerHTML = es.length ? es.map(e => {
     const borc = e.type === "borc";
     return `<div class="entry">
       <div class="dot ${borc ? "debt" : "credit"}">${ic(borc ? "up" : "down", borc ? "debt" : "credit")}</div>
       <div class="mid"><div class="name">${esc(e.note || (borc ? "Veresiye" : "Ödeme"))}</div>
-      <div class="sub">${niceDate(e.date)} · ${borc ? "borç" : "ödeme"}</div></div>
+      <div class="sub">${niceDate(e.date)} · ${borc ? "borç" : "ödeme"}${e.due ? " · söz: " + niceDate(e.due) : ""}</div></div>
       <div class="amt ${borc ? "debt" : "credit"}">${borc ? "+" : "−"}${fmt(e.amount)}</div>
       <button class="del" onclick="deleteEntry('${e.id}')" aria-label="Sil">${ic("x")}</button></div>`;
   }).join("") : `<div class="empty">Henüz kayıt yok.<br>Kırmızı <b style="display:inline;font-size:inherit">Borç yaz</b> ile başla.</div>`;
@@ -485,7 +571,8 @@ function openEntry(type) {
   $("entryTitle").textContent = (type === "borc" ? "Borç yaz · " : "Ödeme al · ") + c.name;
   $("entrySave").className = "btn " + (type === "borc" ? "red" : "green");
   $("entrySave").textContent = type === "borc" ? "Borcu kaydet" : "Ödemeyi kaydet";
-  $("eAmt").value = ""; $("eNote").value = ""; $("eDate").value = today();
+  $("eAmt").value = ""; $("eNote").value = ""; $("eDate").value = today(); $("eDue").value = "";
+  $("dueField").classList.toggle("hidden", type !== "borc");
   $("payAll").innerHTML = type === "odeme" && b > 0
     ? `<button class="chip" onclick="$('eAmt').value='${(b / 100).toLocaleString("tr-TR")}'">Borcun hepsi: ${fmt(b)}</button>` : "";
   openSheet("entrySheet"); setTimeout(() => $("eAmt").focus(), 280);
@@ -493,10 +580,21 @@ function openEntry(type) {
 function saveEntry() {
   const amount = parseMoney($("eAmt").value);
   if (!amount) { $("eAmt").focus(); return; }
-  cust().entries.push({ id: uid(), type: entryType, amount, note: $("eNote").value.trim(), date: $("eDate").value || today(), created: Date.now() });
+  const c = cust(), due = entryType === "borc" ? $("eDue").value : "";
+  const e = { id: uid(), type: entryType, amount, note: $("eNote").value.trim(), date: $("eDate").value || today(), created: Date.now() };
+  if (due) { e.due = due; c.due = due; }
+  c.entries.push(e);
+  if (balance(c) <= 0) delete c.due;   // borç kapandıysa söz de biter
   save(); closeSheets(); renderCust();
-  toast(entryType === "borc" ? "Borç kaydedildi" : "Ödeme kaydedildi");
+  if (due) { toast("Kaydedildi · " + niceDate(due) + " günü seni uyaracağım", addToCalendar, "Takvime ekle"); askNotify(true); }
+  else toast(entryType === "borc" ? "Borç kaydedildi" : "Ödeme kaydedildi");
 }
+function setDue(v) {
+  const d = new Date();
+  if (v === "ay") { d.setMonth(d.getMonth() + 1, 1); } else d.setDate(d.getDate() + v);
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); $("eDue").value = d.toISOString().slice(0, 10);
+}
+function clearDue() { const c = cust(); delete c.due; save(); renderCust(); toast("Ödeme sözü silindi"); }
 function deleteEntry(id) {
   const c = cust(), i = c.entries.findIndex(e => e.id === id), e = c.entries[i];
   c.entries.splice(i, 1); save(); renderCust();
@@ -516,15 +614,55 @@ function waMessage(c) {
   const recent = [...c.entries].sort((a, b) => b.date.localeCompare(a.date) || b.created - a.created).slice(0, 5)
     .map(e => `• ${niceDate(e.date)}: ${e.type === "borc" ? (e.note || "Veresiye") : (e.note ? e.note + " (ödeme)" : "Ödeme")} ${e.type === "borc" ? "" : "−"}${fmt(e.amount)}`);
   const shop = db.shop ? ` ${db.shop} olarak` : "";
-  return `Merhaba ${c.name.split(" ")[0]},${shop} hatırlatmak isteriz: hesabınızda *${fmt(b)}* bakiye bulunuyor.\n\nSon hareketler:\n${recent.join("\n")}\n\nMüsait olduğunuzda ödeyebilirsiniz. Teşekkürler 🙏
+  const promise = c.due && c.due <= today() ? ` (Ödeme sözü verdiğiniz tarih: ${niceDate(c.due)})` : "";
+  return `Merhaba ${c.name.split(" ")[0]},${shop} hatırlatmak isteriz: hesabınızda *${fmt(b)}* bakiye bulunuyor.${promise}\n\nSon hareketler:\n${recent.join("\n")}\n\nMüsait olduğunuzda ödeyebilirsiniz. Teşekkürler 🙏
 
 _Bu hatırlatma Esnafy veresiye defteri tarafından hazırlanmıştır._`;
 }
 function sendWhatsApp() { const c = cust(); location.href = `https://wa.me/${waNumber(c.phone)}?text=${encodeURIComponent(waMessage(c))}`; }
+function sendSms() {
+  const c = cust(), ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const text = waMessage(c).replace(/[*_]/g, "");
+  location.href = `sms:+${waNumber(c.phone)}${ios ? "&" : "?"}body=${encodeURIComponent(text)}`;
+}
 function callCust() { location.href = "tel:" + cust().phone.replace(/[^\d+]/g, ""); }
 
+// ---- Bildirim ve takvim ----
+function notifSupported() { return "Notification" in window; }
+function paintNotif() {
+  $("notifState").textContent = !notifSupported() ? "Ana ekrandan aç" : Notification.permission === "granted" ? "Açık ✓" : Notification.permission === "denied" ? "Kapalı" : "Aç";
+}
+async function askNotify(quiet) {
+  if (!notifSupported()) { if (!quiet) alert("Bildirimler için Esnafy'yi ana ekrana ekleyip oradan aç."); return; }
+  if (Notification.permission === "default") { try { await Notification.requestPermission(); } catch (e) {} }
+  else if (!quiet && Notification.permission === "denied") alert("Bildirimler kapalı. Telefonun Ayarlar → Bildirimler → Esnafy bölümünden açabilirsin.");
+  paintNotif(); checkDueNotify();
+}
+async function checkDueNotify() {   // uygulama açılınca, günde bir kez özet bildirim
+  const ds = dueList(); updateBadge(ds.length);
+  if (!ds.length || !notifSupported() || Notification.permission !== "granted") return;
+  const key = "esnafy-bildirim-gunu"; if (localStorage.getItem(key) === today()) return;
+  localStorage.setItem(key, today());
+  const body = ds.slice(0, 3).map(x => `${x.c.name}: ${fmt(x.b)}`).join("\n") + (ds.length > 3 ? `\n+${ds.length - 3} kişi daha` : "");
+  const title = `Bugün ödeme günü: ${ds.length} müşteri`;
+  try { const r = navigator.serviceWorker && await navigator.serviceWorker.getRegistration(); if (r) return r.showNotification(title, { body, icon: "icon-192.png", badge: "icon-192.png" }); } catch (e) {}
+  try { new Notification(title, { body, icon: "icon-192.png" }); } catch (e) {}
+}
+function addToCalendar() {   // telefonun takvimine, ödeme günü sabah 10'da uyaran etkinlik
+  const c = cust(); if (!c || !c.due) return;
+  const d = c.due.replace(/-/g, ""), next = new Date(c.due); next.setDate(next.getDate() + 1);
+  const d2 = next.toISOString().slice(0, 10).replace(/-/g, ""), stamp = new Date().toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z";
+  const ics = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Esnafy//TR", "BEGIN:VEVENT", `UID:${c.id}-${d}@esnafy`, `DTSTAMP:${stamp}`,
+    `DTSTART;VALUE=DATE:${d}`, `DTEND;VALUE=DATE:${d2}`, `SUMMARY:Esnafy: ${c.name} ödeme günü (${fmt(balance(c))})`,
+    `DESCRIPTION:${c.name} bugün ödeyeceğini söyledi. Esnafy'yi aç ve Hatırlat'a dokun.`,
+    "BEGIN:VALARM", "TRIGGER:PT10H", "ACTION:DISPLAY", `DESCRIPTION:${c.name} ödeme günü`, "END:VALARM", "END:VEVENT", "END:VCALENDAR"].join("\r\n");
+  const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `esnafy-${c.name}.ics`;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
 // ---- Ayarlar ve yedek ----
-function openSettings() { $("sShop").value = db.shop || ""; $("ver").textContent = VERSION; openSheet("setSheet"); }
+function openSettings() { $("sShop").value = db.shop || ""; $("ver").textContent = VERSION; paintNotif(); openSheet("setSheet"); }
 function saveShop() { db.shop = $("sShop").value.trim(); save(); }
 async function exportBackup() {
   saveShop();
@@ -545,6 +683,7 @@ function importBackup(input) {
       for (const c of d.customers) {   // birleştir: aynı müşteri/kayıt tekrar eklenmez
         const ex = db.customers.find(x => x.id === c.id);
         if (!ex) db.customers.push(c);
+        else if (c.due && !ex.due) ex.due = c.due;
         else for (const e of c.entries) if (!ex.entries.some(y => y.id === e.id)) ex.entries.push(e);
       }
       if (!db.shop && d.shop) db.shop = d.shop;
@@ -588,8 +727,9 @@ function hideInstall() { localStorage.setItem(INSTALL_KEY, "1"); $("installTip")
 function openSheet(id) { $(id).classList.add("open"); }
 function closeSheets() { document.querySelectorAll(".sheet-bg").forEach(s => s.classList.remove("open")); document.activeElement.blur(); }
 let toastTimer;
-function toast(msg, undo) {
+function toast(msg, undo, label = "Geri al") {
   $("toastMsg").textContent = msg;
+  $("toastBtn").textContent = label;
   $("toastBtn").classList.toggle("hidden", !undo);
   $("toastBtn").onclick = () => { undo(); $("toast").classList.remove("show"); };
   $("toast").classList.add("show");
@@ -604,6 +744,8 @@ document.addEventListener("keydown", e => {
 renderHome();
 let introSeen = false; try { introSeen = !!localStorage.getItem(INTRO_KEY); } catch (e) {}
 if (!introSeen && !db.customers.length) showIntro(); else checkInstall();
+checkDueNotify();
+document.addEventListener("visibilitychange", () => { if (!document.hidden) { renderHome(); if (current) renderCust(); checkDueNotify(); } });
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js");
 </script>
 </body>
